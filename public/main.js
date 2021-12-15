@@ -11,6 +11,8 @@ const offerOptions = {
   offerToReceiveVideo: 1,
 };
 
+const params = (new URL(document.location)).searchParams;
+const roomName = params.get("room") || "default";
 
 const me = {
   username: `user-${Date.now()}`,
@@ -68,9 +70,11 @@ const userIdFromUsername = (username) => {
 
   updateMyVideo();
 
-
   // start by saying hello!
-  socket.emit("new user", me.username);
+  socket.emit("new user", {
+    username: me.username,
+    room: roomName,
+  });
 
   socket.on("new user", async (data) => {
     data.map(async (user) => {

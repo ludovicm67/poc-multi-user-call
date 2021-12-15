@@ -23,20 +23,26 @@ const io = socket(server, {
   allowEIO3: true,
 });
 
-const activeUsers = new Set();
+const activeUsers = {};
 
 io.on("connection", function (socket) {
   console.log("Made socket connection");
 
   socket.on("new user", function (data) {
-    console.log(`new user: ${data}`);
-    socket.userId = data;
-    activeUsers.add(data);
-    io.emit("new user", [...activeUsers]);
+    console.log('new user:', data);
+    socket.userId = data.username;
+    socket.room = data.room;
+    if (!activeUsers.hasOwnProperty(data.room)) {
+      activeUsers[data.room] = new Set();
+    }
+    activeUsers[data.room].add(data.username);
+    io.emit("new user", [...activeUsers[data.room]]);
   });
 
   socket.on("disconnect", () => {
-    activeUsers.delete(socket.userId);
+    if (activeUsers.hasOwnProperty(socket.room)) {
+      activeUsers[socket.room].delete(socket.userId);
+    }
     io.emit("user disconnected", socket.userId);
   });
 
