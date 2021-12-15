@@ -64,6 +64,40 @@ const userIdFromUsername = (username) => {
   return parseInt(username.replace(/^user-/, ""));
 }
 
+const chunkSize = 1024;
+
+const myFiles = [];
+
+const refreshFilesList = () => {
+  const container = document.getElementById("files-list");
+  container.textContent = ""; // remove all files
+
+  myFiles.forEach((f) => {
+    const fileItem = document.createElement("li");
+    fileItem.innerHTML = f.file.name;
+    container.appendChild(fileItem);
+  });
+};
+
+const uploadFileInput = document.getElementById("file-picker");
+uploadFileInput.addEventListener("change", (event) => {
+  const target = event.target;
+  const files = target.files;
+  if (!files || !files.length || files.length <= 0) {
+    console.warn("no file was selected");
+    return;
+  }
+
+  Array.from(files).forEach((f) => {
+    myFiles.push({
+      file: f,
+      // TODO: extends this to add a list of dest users
+    });
+  });
+
+  refreshFilesList();
+});
+
 (async () => {
   document.getElementById("my-username").innerText = me.username;
   me.stream = await navigator.mediaDevices.getUserMedia(constraints);
