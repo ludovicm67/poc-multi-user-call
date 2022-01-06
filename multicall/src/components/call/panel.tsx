@@ -26,7 +26,7 @@ export default function Panel({ stream }: PanelProps) {
   );
 
   return (
-    <div>
+    <div className="multicall-panel">
       {stream && <video ref={myVideo}></video>}
       {!stream && <p>No local video stream</p>}
     </div>

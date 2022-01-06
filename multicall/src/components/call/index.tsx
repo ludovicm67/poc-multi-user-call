@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
 import { constraints } from "src/call/default";
+import Others from "./others";
 import Panel from "./panel";
 
 type CallProps = {
@@ -19,8 +20,8 @@ export default function Call({ socket }: CallProps) {
   }, [setStream]);
 
   return (
-    <div>
-      <h1>Call started</h1>
+    <div className="multicall-app">
+      <Others />
       <Panel stream={stream} />
     </div>
   );
