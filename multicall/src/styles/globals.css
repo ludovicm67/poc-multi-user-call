@@ -61,6 +61,20 @@ a {
   width: 100%;
 }
 
+@media screen and (max-width: 1200px) {
+  .init-msg {
+    font-size: 1.2em;
+  }
+
+  .multicall-panel {
+    max-width: 250px;
+  }
+
+  .multicall-app-others-alone {
+    font-size: 1.2em;
+  }
+}
+
 @media screen and (max-width: 800px) {
   .init-msg {
     font-size: 1em;
