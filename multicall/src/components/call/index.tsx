@@ -1,9 +1,17 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
-import { constraints } from "src/call/default";
+import { constraints, offerOptions } from "src/call/default";
 import { OtherUser, User } from "src/types/call";
 import Others from "./others";
 import Panel from "./panel";
+
+const rtcConfiguration = {
+  iceServers: [
+    {
+      urls: "stun:stun.l.google.com:19302",
+    },
+  ],
+};
 
 type CallProps = {
   socket: Socket;
@@ -21,12 +29,13 @@ const names = [
 ];
 
 const listenUser = (
-  socketId: string,
+  socket: Socket,
   users: Record<string, OtherUser>,
   data: Record<string, User>,
-  setUsers: Dispatch<Record<string, OtherUser>>
+  setUsers: Dispatch<Record<string, OtherUser>>,
+  stream: MediaStream
 ) => {
-  if (!socketId) {
+  if (!socket.id) {
     return;
   }
 
@@ -42,7 +51,7 @@ const listenUser = (
     });
 
   dataUsers.forEach(async (u) => {
-    if (u.id === socketId) {
+    if (u.id === socket.id) {
       return;
     }
 
@@ -51,10 +60,54 @@ const listenUser = (
     }
 
     if (!newUsers[u.id].hasOwnProperty("pc")) {
+      const pc = new RTCPeerConnection(rtcConfiguration);
+      stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+
+      pc.addEventListener("icecandidate", (e) => {
+        socket.emit("message", {
+          type: "icecandidate",
+          from: socket.id,
+          to: u.id,
+          data: e.candidate,
+        });
+      });
+
+      pc.addEventListener("track", (e) => {
+        const peerStream = e.streams[0];
+        if (
+          !newUsers[u.id].hasOwnProperty("stream") ||
+          newUsers[u.id].stream !== peerStream
+        ) {
+          newUsers[u.id].stream = peerStream;
+        }
+      });
+
+      newUsers[u.id].pc = pc;
+
+      if (socket.id < u.id) {
+        const offer = await newUsers[u.id].pc.createOffer(offerOptions);
+        await newUsers[u.id].pc.setLocalDescription(offer);
+
+        socket.emit("message", {
+          type: "offer",
+          from: socket.id,
+          to: u.id,
+          data: offer,
+        });
+      }
     }
   });
 
   setUsers(newUsers);
+};
+
+const socketEmit = (socket: Socket, type: string, content: any) => {
+  if (!socket) {
+    console.error("no socket available");
+    return;
+  }
+
+  socket.emit(type, content);
 };
 
 export default function Call({ socket }: CallProps) {
@@ -67,30 +120,21 @@ export default function Call({ socket }: CallProps) {
 
   const [users, setUsers] = useState<Record<string, OtherUser>>({});
 
-  const socketEmit = (type: string, content: any) => {
-    if (!socket) {
-      console.error("no socket available");
-      return;
-    }
-
-    socket.emit(type, content);
-  };
-
-  if (!sentInit) {
-    setSentInit(true);
-    socketEmit("user", {
-      username: displayName,
-      room: roomName,
-    });
-  }
-
   // initialize local video stream
   useEffect(() => {
     (async () => {
       const myStream = await navigator.mediaDevices.getUserMedia(constraints);
       setStream(myStream);
+
+      if (!sentInit) {
+        setSentInit(true);
+        socketEmit(socket, "user", {
+          username: displayName,
+          room: roomName,
+        });
+      }
     })();
-  }, [setStream]);
+  }, [setStream, sentInit, displayName, roomName, socket]);
 
   useEffect(() => {
     if (!socket) {
@@ -98,16 +142,18 @@ export default function Call({ socket }: CallProps) {
       return;
     }
 
-    socket.on("user", (data) => listenUser(socket.id, users, data, setUsers));
+    socket.on("user", (data) =>
+      listenUser(socket, users, data, setUsers, stream)
+    );
 
     return () => {
       socket.off("user");
     };
-  }, [socket, users, setUsers]);
+  }, [socket, users, setUsers, stream]);
 
   return (
     <div className="multicall-app">
-      <Others />
+      <Others users={users} />
       <Panel stream={stream} users={users} />
     </div>
   );

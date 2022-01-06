@@ -50,6 +50,8 @@ a {
 }
 
 .multicall-panel {
+  display: flex;
+  flex-direction: column;
   max-width: 350px;
   background-color: rgba(0, 0, 0, 0.4);
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
@@ -89,6 +91,7 @@ a {
   }
 
   .multicall-panel {
+    flex-direction: row;
     max-width: 100%;
     max-height: 150px;
     background-color: rgba(0, 0, 0, 0.4);

@@ -4,9 +4,9 @@ export const constraints = {
   video: true,
 };
 
-export const offerOptions = {
-  offerToReceiveAudio: 1,
-  offerToReceiveVideo: 1,
+export const offerOptions: RTCOfferOptions = {
+  offerToReceiveAudio: true,
+  offerToReceiveVideo: true,
 };
 
 export const setVideoStream = (videoElement: HTMLVideoElement, stream: MediaSource) => {
