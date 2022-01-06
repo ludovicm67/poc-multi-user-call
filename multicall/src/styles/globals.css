@@ -30,6 +30,7 @@ a {
 
 .multicall-app {
   display: flex;
+  flex-direction: row;
   width: 100vw;
   height: 100vh;
 }
@@ -58,4 +59,32 @@ a {
   max-width: 100%;
   min-width: 100%;
   width: 100%;
+}
+
+@media screen and (max-width: 800px) {
+  .init-msg {
+    font-size: 1em;
+  }
+
+  .multicall-app {
+    flex-direction: column;
+  }
+
+  .multicall-app-others-alone {
+    font-size: 1em;
+  }
+
+  .multicall-panel {
+    max-width: 100%;
+    max-height: 150px;
+    background-color: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+  }
+
+  .multicall-panel video {
+    max-width: auto;
+    min-width: auto;
+    width: auto;
+    max-height: 100%;
+  }
 }
