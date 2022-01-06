@@ -1,12 +1,30 @@
 import React, { useState, useEffect, useRef } from "react";
 import SocketIOClient, { Socket } from "socket.io-client";
 import Head from "next/head";
+import { User } from "src/types/call";
+import { constraints } from "src/call/default";
+
+const userIdFromUsername = (username: string) => {
+  return parseInt(username.replace(/^user-/, ""));
+};
 
 export default function Home() {
   const [connected, setConnected] = useState<boolean>(false);
   const [socket, setSocket] = useState<Socket>();
+  const [me, setMe] = useState<User>({
+    username: `user-${Date.now()}`,
+    room: "default",
+  });
+  const [stream, setStream] = useState<MediaStream>();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const socketEmit = (type: string, ...args: any[]) => {
+    if (!connected) {
+      console.error("not connected to socket");
+    }
+
+    socket.emit(type, ...args);
+  };
+
   useEffect(() => {
     // connect to socket server
     const socketClient = SocketIOClient(process.env.BASE_URL, {
@@ -16,36 +34,27 @@ export default function Home() {
     // make sure the socket is usable in other components
     setSocket(socketClient);
 
-    // log socket connection
-    socketClient.on("connect", () => {
-      console.log("SOCKET CONNECTED!", socketClient.id);
-      setConnected(true);
-      socketClient.emit("message", {
-        data: "hello",
-      });
-    });
-
-    // update chat on new message dispatched
-    socketClient.on("message", (message) => {
-      console.log("got message", message);
-    });
-
     // disconnect on unmount
     if (socketClient) {
       return () => {
-        socket.disconnect();
+        socketClient.disconnect();
         setConnected(false);
       };
     }
-  });
+  }, [setConnected, setSocket]);
 
-  const socketEmit = (type: string, ...args: any[]) => {
-    if (!connected) {
-      console.error("not connected to socket");
+  useEffect(() => {
+    async () => {
+      const myStream = await navigator.mediaDevices.getUserMedia(constraints);
+      setStream(myStream);
+    };
+  }, [setStream]);
+
+  useEffect(() => {
+    if (!(connected && stream && socket)) {
+      return;
     }
-
-    socket.emit(type, ...args);
-  };
+  }, [connected, stream, socket]);
 
   const sendHello = () => {
     socketEmit("message", {
