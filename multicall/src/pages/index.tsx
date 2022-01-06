@@ -33,6 +33,7 @@ export default function Home() {
 
     // make sure the socket is usable in other components
     setSocket(socketClient);
+    setConnected(true);
 
     // disconnect on unmount
     if (socketClient) {
