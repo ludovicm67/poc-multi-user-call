@@ -7,7 +7,7 @@ export type NextApiResponseServerIO = NextApiResponse & {
   socket: Socket & {
     server: NetServer & {
       io: SocketIOServer;
-      users: Record<string, Record<string, User>>;
     };
   };
+  users: Record<string, Record<string, User>>;
 };

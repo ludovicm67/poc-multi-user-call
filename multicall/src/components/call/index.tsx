@@ -10,6 +10,22 @@ type CallProps = {
 
 export default function Call({ socket }: CallProps) {
   const [stream, setStream] = useState<MediaStream>();
+  const socketId = socket.id;
+  const roomName = "default";
+
+  const socketEmit = (type: string, content: any) => {
+    if (!socket) {
+      console.error("no socket available");
+      return;
+    }
+
+    socket.emit(type, { ...content, from: socketId });
+  };
+
+  socketEmit("new user", {
+    username: socketId,
+    room: roomName,
+  });
 
   // initialize local video stream
   useEffect(() => {
