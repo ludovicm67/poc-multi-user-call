@@ -18,7 +18,6 @@ const socketio = async (req: NextApiRequest, res: NextApiResponseServerIO) => {
   if (!res.socket.server.io) {
     console.log("New Socket.io server...");
 
-
     // adapt Next's net Server to http Server
     const httpServer: NetServer = res.socket.server as any;
     const io = new ServerIO(httpServer, {
@@ -34,17 +33,24 @@ const socketio = async (req: NextApiRequest, res: NextApiResponseServerIO) => {
     io.on("connection", (socket) => {
       console.log("Made socket connection", socket.id);
 
+      const socketId = socket.id;
+
       const currentUser: User = {
         username: "",
         room: "",
+        id: socketId,
       };
 
       socket.on("message", (data) => {
         io.emit("message", data);
       });
 
-      socket.on("new user", function (data) {
-        console.log('new user:', data);
+      socket.on("user", function (data) {
+        if (!data.from) {
+          return;
+        }
+
+        console.log('user:', data);
         if (!res.users.hasOwnProperty(data.room)) {
           res.users[data.room] = {};
         }
@@ -52,15 +58,17 @@ const socketio = async (req: NextApiRequest, res: NextApiResponseServerIO) => {
           res.users[data.room][data.username] = {
             room: data.room,
             username: data.username,
+            id: socketId,
           };
         }
 
         res.users[data.room][data.username] = {
           room: data.room,
           username: data.username,
+          id: socketId,
         };
 
-        io.emit("new user", res.users[data.room]);
+        io.emit("user", res.users[data.room]);
       });
 
       socket.on("disconnect", () => {

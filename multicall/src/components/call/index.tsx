@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Socket } from "socket.io-client";
 import { constraints } from "src/call/default";
+import { OtherUser } from "src/types/call";
 import Others from "./others";
 import Panel from "./panel";
 
@@ -8,10 +9,26 @@ type CallProps = {
   socket: Socket;
 };
 
+const names = [
+  "Alice",
+  "Bob",
+  "Charlie",
+  "Dave",
+  "Erin",
+  "Franck",
+  "Jon",
+  "Jane",
+];
+
 export default function Call({ socket }: CallProps) {
+  const randomName = names[Math.floor(Math.random() * names.length)];
+
   const [stream, setStream] = useState<MediaStream>();
+  const [displayName, setDisplayName] = useState<string>(randomName);
   const socketId = socket.id;
   const roomName = "default";
+
+  const [users, setUsers] = useState<Record<string, OtherUser>>({});
 
   const socketEmit = (type: string, content: any) => {
     if (!socket) {
@@ -22,8 +39,8 @@ export default function Call({ socket }: CallProps) {
     socket.emit(type, { ...content, from: socketId });
   };
 
-  socketEmit("new user", {
-    username: socketId,
+  socketEmit("user", {
+    username: displayName,
     room: roomName,
   });
 
@@ -38,7 +55,7 @@ export default function Call({ socket }: CallProps) {
   return (
     <div className="multicall-app">
       <Others />
-      <Panel stream={stream} />
+      <Panel stream={stream} users={users} />
     </div>
   );
 }

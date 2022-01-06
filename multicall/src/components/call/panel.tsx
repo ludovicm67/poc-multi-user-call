@@ -1,10 +1,12 @@
 import { useCallback } from "react";
+import { OtherUser } from "src/types/call";
 
 type PanelProps = {
   stream: MediaStream;
+  users: Record<string, OtherUser>;
 };
 
-export default function Panel({ stream }: PanelProps) {
+export default function Panel({ stream, users }: PanelProps) {
   const myVideo = useCallback(
     (video) => {
       if (!video) {
@@ -29,6 +31,12 @@ export default function Panel({ stream }: PanelProps) {
     <div className="multicall-panel">
       {stream && <video ref={myVideo}></video>}
       {!stream && <p>No local video stream</p>}
+      <ul>
+        {Object.entries(users).map((u) => {
+          const user = u[1];
+          return <li key={user.id}>{user.username}</li>;
+        })}
+      </ul>
     </div>
   );
 }
