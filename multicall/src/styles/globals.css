@@ -18,3 +18,12 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.init-msg {
+  font-size: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+}
