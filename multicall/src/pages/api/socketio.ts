@@ -46,36 +46,36 @@ const socketio = async (req: NextApiRequest, res: NextApiResponseServerIO) => {
       });
 
       socket.on("user", function (data) {
-        if (!data.from) {
-          return;
-        }
-
         console.log('user:', data);
         if (!res.users.hasOwnProperty(data.room)) {
           res.users[data.room] = {};
         }
-        if (!res.users[data.room].hasOwnProperty(data.username)) {
-          res.users[data.room][data.username] = {
+        if (!res.users[data.room].hasOwnProperty(socketId)) {
+          res.users[data.room][socketId] = {
             room: data.room,
             username: data.username,
             id: socketId,
           };
         }
 
-        res.users[data.room][data.username] = {
+        res.users[data.room][socketId] = {
           room: data.room,
           username: data.username,
           id: socketId,
         };
 
+        currentUser.room = data.room;
+        currentUser.username = data.username;
+
         io.emit("user", res.users[data.room]);
       });
 
       socket.on("disconnect", () => {
+        console.log('disconnect', JSON.stringify(currentUser));
         if (currentUser.room !== "" && res.users.hasOwnProperty(currentUser.room)) {
-          delete res.users[currentUser.room][currentUser.username];
+          delete res.users[currentUser.room][socketId];
+          io.emit("user", res.users[currentUser.room]);
         }
-        io.emit("user disconnected", currentUser.username);
       });
     });
 

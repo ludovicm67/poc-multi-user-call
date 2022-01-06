@@ -34,7 +34,11 @@ export default function Panel({ stream, users }: PanelProps) {
       <ul>
         {Object.entries(users).map((u) => {
           const user = u[1];
-          return <li key={user.id}>{user.username}</li>;
+          return (
+            <li key={user.id}>
+              {user.username} <small>#{user.id}</small>
+            </li>
+          );
         })}
       </ul>
     </div>
