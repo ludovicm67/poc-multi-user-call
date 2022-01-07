@@ -11,3 +11,5 @@ const rtcConfiguration = {
     },*/
   ],
 };
+
+export default rtcConfiguration;

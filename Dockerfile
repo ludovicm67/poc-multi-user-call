@@ -1,9 +1,9 @@
 FROM docker.io/library/node:16-alpine
 
-EXPOSE 8080
+EXPOSE 3000
 
 WORKDIR /app
 COPY package-lock.json package.json ./
 RUN npm ci
 COPY . .
-CMD [ "node", "index.js" ]
+CMD [ "npm", "run", "start" ]

@@ -1,8 +1,10 @@
-# Multi user WebRTC call
+# Multi user call
 
 ## Quick Start
 
 ```sh
-npm run install # install dependencies
-npm run watch # launch project, restart project on each change in index.js file
+npm i
+npm run start
 ```
+
+And open http://localhost:3000

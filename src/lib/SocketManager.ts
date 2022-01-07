@@ -1,6 +1,7 @@
 import SocketIOClient, { Socket } from "socket.io-client";
 
 import { constraints, offerOptions } from "src/call/default";
+import rtcConfiguration from "src/call/rtcConfiguration";
 import { OtherUser, User } from "src/types/call";
 
 type MessageData = {
@@ -8,14 +9,6 @@ type MessageData = {
   to: string;
   from: string;
   data: any;
-};
-
-const rtcConfiguration = {
-  iceServers: [
-    {
-      urls: "stun:stun.l.google.com:19302",
-    },
-  ],
 };
 
 const SocketManager = class SocketManager {
