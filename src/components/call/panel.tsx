@@ -39,10 +39,25 @@ export default function Panel() {
       return;
     }
 
-    sm.broadcastDataChannel({
-      type: "file",
-      data: "test",
-    });
+    const chunkLength = 1000;
+
+    const file = files[0];
+    var reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event, text) => {
+      if (event) text = event.target.result;
+
+      let message = "";
+      if (text.length > chunkLength) {
+        message = text.slice(0, chunkLength);
+      } else {
+        message = text;
+      }
+      sm.broadcastDataChannel({
+        type: "file",
+        data: message,
+      });
+    };
   };
 
   return (
