@@ -1,12 +1,14 @@
 import { useCallback } from "react";
+import { useSelector } from "react-redux";
+
 import { OtherUser } from "src/types/call";
 
-type PanelProps = {
-  stream: MediaStream;
-  users: Record<string, OtherUser>;
-};
+export default function Panel() {
+  const stream = useSelector((state: any) => state.user.stream);
+  const users: Record<string, OtherUser> = useSelector(
+    (state: any) => state.users
+  );
 
-export default function Panel({ stream, users }: PanelProps) {
   const myVideo = useCallback(
     (video) => {
       if (!video) {

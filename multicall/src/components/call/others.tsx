@@ -1,12 +1,13 @@
+import { useSelector } from "react-redux";
+
 import { OtherUser } from "src/types/call";
 import Alone from "./alone";
 import User from "./user";
 
-type OthersProps = {
-  users: Record<string, OtherUser>;
-};
-
-export default function Others({ users }: OthersProps) {
+export default function Others() {
+  const users: Record<string, OtherUser> = useSelector(
+    (state: any) => state.users
+  );
   const others = Object.values(users);
 
   if (others.length === 0) {

@@ -1,3 +1,4 @@
+import { useCallback, useEffect } from "react";
 import { OtherUser } from "src/types/call";
 
 type UserProps = {
@@ -5,13 +6,48 @@ type UserProps = {
 };
 
 export default function User({ user }: UserProps) {
+  const video = useCallback(
+    (video) => {
+      if (!video) {
+        return;
+      }
+
+      if ("srcObject" in video) {
+        video.srcObject = user.stream;
+      } else {
+        video.src = window.URL.createObjectURL(
+          user.stream as unknown as MediaSource
+        );
+      }
+
+      video.play();
+      video.muted = true;
+    },
+    [user.stream]
+  );
+
   if (!user.pc) {
-    return <div>{user.username} (no direct connection)</div>;
+    return (
+      <div className="multicall-others-user">
+        <div className="blank">(No Direct Connection)</div>
+        <p>{user.username}</p>
+      </div>
+    );
   }
 
   if (!user.stream) {
-    return <div>{user.username} (no stream)</div>;
+    return (
+      <div className="multicall-others-user">
+        <div className="blank">(No Stream)</div>
+        <p>{user.username}</p>
+      </div>
+    );
   }
 
-  return <div>{user.username} (connected)</div>;
+  return (
+    <div className="multicall-others-user">
+      <video ref={video}></video>
+      <p>{user.username}</p>
+    </div>
+  );
 }

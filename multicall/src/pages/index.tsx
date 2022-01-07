@@ -1,30 +1,22 @@
-import React, { useState, useEffect } from "react";
-import SocketIOClient, { Socket } from "socket.io-client";
+import React, { useState, useEffect, useContext } from "react";
+import { useSelector } from "react-redux";
+import { Socket } from "socket.io-client";
 import Head from "next/head";
 import Call from "src/components/call";
+import SocketContext from "src/lib/SocketContext";
 
 export default function Home() {
-  const [connected, setConnected] = useState<boolean>(false);
+  const sm = useContext(SocketContext);
   const [socket, setSocket] = useState<Socket>();
+  const stream = useSelector((state: any) => state.user.stream);
 
   useEffect(() => {
-    // connect to socket server
-    const socketClient = SocketIOClient(process.env.BASE_URL, {
-      path: "/api/socketio",
-    });
+    const s = sm.getSocket();
+    sm.connect();
+    setSocket(s);
+  }, [sm]);
 
-    // make sure the socket is usable in other components
-    setSocket(socketClient);
-    setConnected(true);
-
-    // disconnect on unmount
-    if (socketClient) {
-      return () => {
-        socketClient.disconnect();
-        setConnected(false);
-      };
-    }
-  }, [setConnected, setSocket]);
+  const isReady = socket && stream;
 
   return (
     <div>
@@ -33,12 +25,12 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      {!(connected && socket) && (
+      {!isReady && (
         <div className="init-msg">
-          <p>Connecting to the signaling server…</p>
+          <p>Starting the call…</p>
         </div>
       )}
-      {connected && socket && <Call socket={socket} />}
+      {isReady && <Call />}
     </div>
   );
 }

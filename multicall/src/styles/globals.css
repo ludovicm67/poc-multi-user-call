@@ -47,6 +47,39 @@ a {
 
 .multicall-others {
   flex: 1;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.multicall-others-user {
+  margin: 20px;
+  height: 250px;
+  width: 250px;
+}
+
+.multicall-others-user > video {
+  max-width: 250px;
+  max-height: 250px;
+  border-radius: 10px;
+}
+
+.multicall-others-user > .blank {
+  width: 250px;
+  height: 70px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 18px;
+  line-height: 48px;
+  vertical-align: middle;
+  font-style: italic;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.multicall-others-user > p {
+  padding: 12px;
+  position: relative;
+  background-color: #000;
+  top: -40px;
 }
 
 .multicall-panel {
