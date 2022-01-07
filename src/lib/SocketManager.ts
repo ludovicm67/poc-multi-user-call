@@ -81,7 +81,13 @@ const SocketManager = class SocketManager {
    * @param data Data received.
    */
   getDataChannel(id: string, data: any) {
-    console.log(`[data channel] got following data from '${id}': ${JSON.stringify(data)}`);
+    try {
+      const d = JSON.parse(data);
+      console.log(`[data channel] got following data from '${id}': ${JSON.stringify(d)}`);
+    } catch (e) {
+      console.error(e);
+      // ignore message
+    }
   }
 
   /**
@@ -94,8 +100,8 @@ const SocketManager = class SocketManager {
     const users: Record<string, OtherUser> = state.users;
 
     Object.values(users).forEach((u) => {
-      if (u.dc.readyState === 'open') {
-        u.dc.send(data);
+      if (u?.dc?.readyState === 'open') {
+        u.dc.send(JSON.stringify(data));
       }
     });
   }

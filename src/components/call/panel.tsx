@@ -39,7 +39,10 @@ export default function Panel() {
       return;
     }
 
-    sm.broadcastDataChannel(files);
+    sm.broadcastDataChannel({
+      type: "file",
+      data: "test",
+    });
   };
 
   return (
