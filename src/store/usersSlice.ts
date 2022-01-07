@@ -12,6 +12,9 @@ const usersReducer = (state = initialState, action) => {
     case 'USERS_SET_STREAM':
       return (state.hasOwnProperty(action.payload.id)) ? {...state, [action.payload.id]: {...state[action.payload.id], stream: action.payload.stream}} : state;
 
+    case 'USERS_SET_DATA_CHANNEL':
+      return (state.hasOwnProperty(action.payload.id)) ? {...state, [action.payload.id]: {...state[action.payload.id], dc: action.payload.dc}} : state;
+
     default:
       return state;
   }

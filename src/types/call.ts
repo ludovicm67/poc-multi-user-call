@@ -7,4 +7,5 @@ export type User = {
 export type OtherUser = {
   pc?: RTCPeerConnection;
   stream?: MediaStream;
+  dc?: RTCDataChannel;
 } & User;

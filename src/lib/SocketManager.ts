@@ -75,6 +75,32 @@ const SocketManager = class SocketManager {
   };
 
   /**
+   * Do something with data coming from a data channel.
+   *
+   * @param id The id of the user that sent the data.
+   * @param data Data received.
+   */
+  getDataChannel(id: string, data: any) {
+    console.log(`[data channel] got following data from '${id}': ${JSON.stringify(data)}`);
+  }
+
+  /**
+   * Broadcast on all data channels.
+   *
+   * @param data Data to broadcast.
+   */
+  broadcastDataChannel(data: any) {
+    const state = this.store.getState();
+    const users: Record<string, OtherUser> = state.users;
+
+    Object.values(users).forEach((u) => {
+      if (u.dc.readyState === 'open') {
+        u.dc.send(data);
+      }
+    });
+  }
+
+  /**
    * Listen on "user" events.
    *
    * @param data List of users.
@@ -137,6 +163,27 @@ const SocketManager = class SocketManager {
             });
           }
         });
+
+        pc.addEventListener("datachannel", (e) => {
+          this.store.dispatch({
+            type: 'USERS_SET_DATA_CHANNEL',
+            payload: {
+              id: u.id,
+              dc: e.channel,
+            },
+          });
+          e.channel.onmessage = (e) => {
+            this.getDataChannel(u.id, e.data);
+          };
+        });
+
+        if (this.socket.id < u.id) {
+          const dc = pc.createDataChannel("data");
+          dc.onmessage = (e) => {
+            this.getDataChannel(u.id, e.data);
+          };
+          newUsers[u.id].dc = dc;
+        }
 
         newUsers[u.id].pc = pc;
 

@@ -1,9 +1,11 @@
-import { useCallback } from "react";
+import { useCallback, useContext } from "react";
 import { useSelector } from "react-redux";
 
+import SocketContext from "src/lib/SocketContext";
 import { OtherUser } from "src/types/call";
 
 export default function Panel() {
+  const sm = useContext(SocketContext);
   const stream = useSelector((state: any) => state.user.stream);
   const users: Record<string, OtherUser> = useSelector(
     (state: any) => state.users
@@ -29,6 +31,17 @@ export default function Panel() {
     [stream]
   );
 
+  const onFileUpload = (e: any) => {
+    const target: any = event.target;
+    const files = target.files;
+    if (!files || !files.length || files.length <= 0) {
+      console.warn("no file was selected");
+      return;
+    }
+
+    sm.broadcastDataChannel(files);
+  };
+
   return (
     <div className="multicall-panel">
       {stream && <video ref={myVideo}></video>}
@@ -43,6 +56,9 @@ export default function Panel() {
           );
         })}
       </ul>
+      <div className="multicall-panel-files">
+        <input onChange={onFileUpload} type="file" multiple={true} />
+      </div>
     </div>
   );
 }
