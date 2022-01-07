@@ -5,7 +5,7 @@ const rtcConfiguration = {
     },
     /*{
       urls: "turn:example.com:3478",
-      credentialType: "password",
+      credentialType: "password" as "password",
       username: "public",
       credential: "public",
     },*/

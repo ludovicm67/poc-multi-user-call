@@ -6,4 +6,5 @@ WORKDIR /app
 COPY package-lock.json package.json ./
 RUN npm ci
 COPY . .
-CMD [ "npm", "run", "start" ]
+RUN chmod +x entrypoint.sh
+CMD [ "/app/entrypoint.sh" ]
