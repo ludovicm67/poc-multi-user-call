@@ -42,7 +42,7 @@ export default function Panel() {
     const chunkLength = 1000;
 
     const file = files[0];
-    var reader = new FileReader();
+    const reader: any = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = (event, text) => {
       if (event) text = event.target.result;
