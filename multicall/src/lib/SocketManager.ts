@@ -48,7 +48,7 @@ const SocketManager = class SocketManager {
 
     const localUser = this.store.getState().user;
     this.socketEmit("user", {
-      username: localUser.displayName,
+      displayName: localUser.displayName,
       room: localUser.room,
     });
 

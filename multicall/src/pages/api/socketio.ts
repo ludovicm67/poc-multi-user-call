@@ -36,7 +36,7 @@ const socketio = async (req: NextApiRequest, res: NextApiResponseServerIO) => {
       const socketId = socket.id;
 
       const currentUser: User = {
-        username: "",
+        displayName: "",
         room: "",
         id: socketId,
       };
@@ -53,19 +53,19 @@ const socketio = async (req: NextApiRequest, res: NextApiResponseServerIO) => {
         if (!res.users[data.room].hasOwnProperty(socketId)) {
           res.users[data.room][socketId] = {
             room: data.room,
-            username: data.username,
+            displayName: data.displayName,
             id: socketId,
           };
         }
 
         res.users[data.room][socketId] = {
           room: data.room,
-          username: data.username,
+          displayName: data.displayName,
           id: socketId,
         };
 
         currentUser.room = data.room;
-        currentUser.username = data.username;
+        currentUser.displayName = data.displayName;
 
         io.emit("user", res.users[data.room]);
       });

@@ -30,7 +30,7 @@ export default function User({ user }: UserProps) {
     return (
       <div className="multicall-others-user">
         <div className="blank">(No Direct Connection)</div>
-        <p>{user.username}</p>
+        <p>{user.displayName}</p>
       </div>
     );
   }
@@ -39,7 +39,7 @@ export default function User({ user }: UserProps) {
     return (
       <div className="multicall-others-user">
         <div className="blank">(No Stream)</div>
-        <p>{user.username}</p>
+        <p>{user.displayName}</p>
       </div>
     );
   }
@@ -47,7 +47,7 @@ export default function User({ user }: UserProps) {
   return (
     <div className="multicall-others-user">
       <video ref={video}></video>
-      <p>{user.username}</p>
+      <p>{user.displayName}</p>
     </div>
   );
 }

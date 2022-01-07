@@ -38,7 +38,7 @@ export default function Panel() {
           const user = u[1];
           return (
             <li key={user.id}>
-              {user.username} <small>#{user.id}</small>
+              {user.displayName} <small>#{user.id}</small>
             </li>
           );
         })}

@@ -1,5 +1,5 @@
 export type User = {
-  username: string;
+  displayName: string;
   room: string;
   id: string;
 };
