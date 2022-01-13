@@ -103,6 +103,62 @@ a {
   width: 100%;
 }
 
+.multicall-panel-chat-input {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.multicall-panel-text,
+.multicall-panel-text input {
+  display: flex;
+  flex: 1;
+}
+
+.multicall-panel-text input {
+  padding: 8px;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 3px;
+  border: none;
+  opacity: 0.8;
+}
+
+.multicall-panel-file-button > input[type="file"] {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+.multicall-panel-file-button > label {
+  padding: 8px;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 3px;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+  font-size: 0.8em;
+}
+
+.multicall-panel-send-button button {
+  padding: 8px;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 3px;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.multicall-panel-file-button > label:hover,
+.multicall-panel-send-button button:hover {
+  opacity: 1;
+}
+
 @media screen and (max-width: 1200px) {
   .init-msg {
     font-size: 1.2em;

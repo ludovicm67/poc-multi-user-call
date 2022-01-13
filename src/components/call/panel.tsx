@@ -1,10 +1,21 @@
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useState } from "react";
 import { useSelector } from "react-redux";
+import { v4 as uuidv4 } from "uuid";
 
 import SocketContext from "src/lib/SocketContext";
 import { OtherUser } from "src/types/call";
 
+type FileContainer = {
+  file: File;
+  id: string;
+};
+
+const CHUNK_LENGTH = 1_000;
+
 export default function Panel() {
+  const [selectedFiles, setSelectedFiles] = useState<FileContainer>();
+  const [message, setMessage] = useState<string>("");
+
   const sm = useContext(SocketContext);
   const stream = useSelector((state: any) => state.user.stream);
   const users: Record<string, OtherUser> = useSelector(
@@ -31,33 +42,80 @@ export default function Panel() {
     [stream]
   );
 
-  const onFileUpload = (e: any) => {
-    const target: any = event.target;
-    const files = target.files;
-    if (!files || !files.length || files.length <= 0) {
+  const uploadFiles = () => {
+    if (!selectedFiles) {
       console.warn("no file was selected");
       return;
     }
 
-    const chunkLength = 1000;
+    const file = selectedFiles.file;
+    const fileId = selectedFiles.id;
+    let last = false;
 
-    const file = files[0];
     const reader: any = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = (event, text) => {
       if (event) text = event.target.result;
 
       let message = "";
-      if (text.length > chunkLength) {
-        message = text.slice(0, chunkLength);
+      if (text.length > CHUNK_LENGTH) {
+        message = text.slice(0, CHUNK_LENGTH);
       } else {
         message = text;
+        last = true;
+        setSelectedFiles(undefined);
       }
       sm.broadcastDataChannel({
         type: "file",
-        data: message,
+        data: {
+          id: fileId,
+          message,
+          last,
+        },
       });
     };
+  };
+
+  const selectFile = (e: any) => {
+    const target: any = e.target;
+    const files = target.files;
+    if (!files || !files.length || files.length <= 0) {
+      return;
+    }
+
+    const fileContainer: FileContainer = {
+      file: files[0],
+      id: uuidv4(),
+    };
+
+    setSelectedFiles(fileContainer);
+  };
+
+  const sendButtonAction = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    if (message) {
+      const last = true;
+      const chatId = uuidv4();
+      sm.broadcastDataChannel({
+        type: "chat",
+        data: {
+          id: chatId,
+          message,
+          last,
+        },
+      });
+      setMessage("");
+    }
+
+    if (selectedFiles) {
+      uploadFiles();
+    }
+  };
+
+  const changeMessage = (e) => {
+    setMessage(e.target.value);
   };
 
   return (
@@ -74,9 +132,36 @@ export default function Panel() {
           );
         })}
       </ul>
-      <div className="multicall-panel-files">
-        <input onChange={onFileUpload} type="file" multiple={true} />
-      </div>
+      <form className="multicall-panel-chat-input" onSubmit={sendButtonAction}>
+        {!selectedFiles && (
+          <div className="multicall-panel-text">
+            <input
+              type="text"
+              placeholder="Your message here…"
+              value={message}
+              onChange={changeMessage}
+            />
+          </div>
+        )}
+        {!message && (
+          <div className="multicall-panel-file-button">
+            <label htmlFor="chat-file-input">
+              {selectedFiles ? selectedFiles.file.name : "File?"}
+            </label>
+            <input
+              id="chat-file-input"
+              onChange={selectFile}
+              type="file"
+              multiple={false}
+            />
+          </div>
+        )}
+        {(message || selectedFiles) && (
+          <div className="multicall-panel-send-button">
+            <button type="submit">Send »</button>
+          </div>
+        )}
+      </form>
     </div>
   );
 }
