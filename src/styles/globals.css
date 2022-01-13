@@ -149,6 +149,8 @@ a {
   overflow: hidden;
   position: absolute;
   z-index: -1;
+  top: 0;
+  right: 0;
 }
 
 .multicall-panel-file-button > label,
@@ -179,6 +181,33 @@ a {
 .multicall-panel-send-button button:hover,
 .multicall-panel-file-button-selected > button:hover {
   opacity: 1;
+}
+
+.multicall-panel-chat-messages {
+  display: flex;
+  flex: 1;
+}
+
+.chat-container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.chat-message-sent {
+  background-color: rgba(0, 0, 0, 0.4);
+  margin-left: 2em;
+}
+
+.chat-message-received {
+  background-color: rgba(255, 255, 255, 0.2);
+  margin-right: 2em;
+}
+
+.chat-message-sent,
+.chat-message-received {
+  padding: 1em;
+  margin-bottom: 1em;
 }
 
 @media screen and (max-width: 1200px) {

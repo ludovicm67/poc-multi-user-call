@@ -83,7 +83,33 @@ const SocketManager = class SocketManager {
   getDataChannel(id: string, data: any) {
     try {
       const d = JSON.parse(data);
-      console.log(`[data channel] got following data from '${id}': ${JSON.stringify(d)}`);
+      if (!d.type || !d.data || !d.data.id) {
+        return;
+      }
+
+      if (d.type === "chat") {
+        if (!d.data.message) {
+          return;
+        }
+
+        if (!d.data.last) {
+          // ignore it for now
+          return;
+        }
+
+        this.store.dispatch({
+          type: 'MESSAGES_RECEIVED',
+          payload: {
+            id: d.data.id,
+            from: id,
+            type: d.type,
+            data: d.data.message,
+          },
+        });
+        return;
+      }
+
+      console.log(`[data channel] got unhandled data from '${id}': ${JSON.stringify(d)}`);
     } catch (e) {
       console.error(e);
       // ignore message

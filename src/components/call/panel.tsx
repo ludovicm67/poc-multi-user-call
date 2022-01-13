@@ -1,9 +1,10 @@
 import { useCallback, useContext, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 
 import SocketContext from "src/lib/SocketContext";
 import { OtherUser } from "src/types/call";
+import Messages from "./messages";
 
 type FileContainer = {
   file: File;
@@ -13,6 +14,8 @@ type FileContainer = {
 const CHUNK_LENGTH = 1_000;
 
 export default function Panel() {
+  const dispatch = useDispatch();
+
   const [selectedFiles, setSelectedFiles] = useState<FileContainer>();
   const [message, setMessage] = useState<string>("");
 
@@ -110,6 +113,14 @@ export default function Panel() {
           last,
         },
       });
+      dispatch({
+        type: "MESSAGES_SENT",
+        payload: {
+          id: chatId,
+          type: "chat",
+          data: message,
+        },
+      });
       setMessage("");
     }
 
@@ -127,7 +138,9 @@ export default function Panel() {
       {stream && <video ref={myVideo}></video>}
       {!stream && <p>No local video stream</p>}
       <div className="multicall-panel-exchange">
-        <div className="multicall-panel-chat-messages"></div>
+        <div className="multicall-panel-chat-messages">
+          <Messages />
+        </div>
         {/* <ul>
           {Object.entries(users).map((u) => {
             const user = u[1];
