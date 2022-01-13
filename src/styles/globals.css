@@ -124,7 +124,14 @@ a {
   opacity: 0.8;
 }
 
-.multicall-panel-file-button > input[type="file"] {
+.multicall-panel-file-button-selected,
+.multicall-panel-file-button-selected > label {
+  display: flex;
+  flex: 1;
+}
+
+.multicall-panel-file-button > input[type="file"],
+.multicall-panel-file-button-selected > input[type="file"] {
   width: 0.1px;
   height: 0.1px;
   opacity: 0;
@@ -133,7 +140,8 @@ a {
   z-index: -1;
 }
 
-.multicall-panel-file-button > label {
+.multicall-panel-file-button > label,
+.multicall-panel-file-button-selected > label {
   padding: 8px;
   color: #fff;
   background-color: rgba(0, 0, 0, 0.4);
@@ -144,7 +152,8 @@ a {
   font-size: 0.8em;
 }
 
-.multicall-panel-send-button button {
+.multicall-panel-send-button button,
+.multicall-panel-file-button-selected > button {
   padding: 8px;
   color: #fff;
   background-color: rgba(0, 0, 0, 0.4);
@@ -155,7 +164,9 @@ a {
 }
 
 .multicall-panel-file-button > label:hover,
-.multicall-panel-send-button button:hover {
+.multicall-panel-file-button-selected > label:hover,
+.multicall-panel-send-button button:hover,
+.multicall-panel-file-button-selected > button:hover {
   opacity: 1;
 }
 

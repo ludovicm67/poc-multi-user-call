@@ -91,6 +91,10 @@ export default function Panel() {
     setSelectedFiles(fileContainer);
   };
 
+  const clearSelectedFiles = () => {
+    setSelectedFiles(undefined);
+  };
+
   const sendButtonAction = (e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -143,11 +147,10 @@ export default function Panel() {
             />
           </div>
         )}
-        {!message && (
+
+        {!message && !selectedFiles && (
           <div className="multicall-panel-file-button">
-            <label htmlFor="chat-file-input">
-              {selectedFiles ? selectedFiles.file.name : "File?"}
-            </label>
+            <label htmlFor="chat-file-input">File?</label>
             <input
               id="chat-file-input"
               onChange={selectFile}
@@ -156,6 +159,21 @@ export default function Panel() {
             />
           </div>
         )}
+        {!message && selectedFiles && (
+          <div className="multicall-panel-file-button-selected">
+            <label htmlFor="chat-file-input">{selectedFiles.file.name}</label>
+            <input
+              id="chat-file-input"
+              onChange={selectFile}
+              type="file"
+              multiple={false}
+            />
+            <button type="button" onClick={clearSelectedFiles}>
+              ✕
+            </button>
+          </div>
+        )}
+
         {(message || selectedFiles) && (
           <div className="multicall-panel-send-button">
             <button type="submit">Send »</button>
