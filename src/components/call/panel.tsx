@@ -126,60 +126,66 @@ export default function Panel() {
     <div className="multicall-panel">
       {stream && <video ref={myVideo}></video>}
       {!stream && <p>No local video stream</p>}
-      <ul>
-        {Object.entries(users).map((u) => {
-          const user = u[1];
-          return (
-            <li key={user.id}>
-              {user.displayName} <small>#{user.id}</small>
-            </li>
-          );
-        })}
-      </ul>
-      <form className="multicall-panel-chat-input" onSubmit={sendButtonAction}>
-        {!selectedFiles && (
-          <div className="multicall-panel-text">
-            <input
-              type="text"
-              placeholder="Your message here…"
-              value={message}
-              onChange={changeMessage}
-            />
-          </div>
-        )}
+      <div className="multicall-panel-exchange">
+        <div className="multicall-panel-chat-messages"></div>
+        {/* <ul>
+          {Object.entries(users).map((u) => {
+            const user = u[1];
+            return (
+              <li key={user.id}>
+                {user.displayName} <small>#{user.id}</small>
+              </li>
+            );
+          })}
+        </ul> */}
+        <form
+          className="multicall-panel-chat-input"
+          onSubmit={sendButtonAction}
+        >
+          {!selectedFiles && (
+            <div className="multicall-panel-text">
+              <input
+                type="text"
+                placeholder="Your message here…"
+                value={message}
+                onChange={changeMessage}
+              />
+            </div>
+          )}
 
-        {!message && !selectedFiles && (
-          <div className="multicall-panel-file-button">
-            <label htmlFor="chat-file-input">File?</label>
-            <input
-              id="chat-file-input"
-              onChange={selectFile}
-              type="file"
-              multiple={false}
-            />
-          </div>
-        )}
-        {!message && selectedFiles && (
-          <div className="multicall-panel-file-button-selected">
-            <label htmlFor="chat-file-input">{selectedFiles.file.name}</label>
-            <input
-              id="chat-file-input"
-              onChange={selectFile}
-              type="file"
-              multiple={false}
-            />
-            <button type="button" onClick={clearSelectedFiles}>
-              ✕
-            </button>
-          </div>
-        )}
+          {!message && !selectedFiles && (
+            <div className="multicall-panel-file-button">
+              <label htmlFor="chat-file-input">File?</label>
+              <input
+                id="chat-file-input"
+                onChange={selectFile}
+                type="file"
+                multiple={false}
+              />
+            </div>
+          )}
+          {!message && selectedFiles && (
+            <div className="multicall-panel-file-button-selected">
+              <label htmlFor="chat-file-input">{selectedFiles.file.name}</label>
+              <input
+                id="chat-file-input"
+                onChange={selectFile}
+                type="file"
+                multiple={false}
+              />
+              <button type="button" onClick={clearSelectedFiles}>
+                ✕
+              </button>
+            </div>
+          )}
 
-        {(message || selectedFiles) && (
-          <div className="multicall-panel-send-button">
-            <button type="submit">Send »</button>
-          </div>
-        )}
-      </form>
+          {(message || selectedFiles) && (
+            <div className="multicall-panel-send-button">
+              <button type="submit">Send »</button>
+            </div>
+          )}
+        </form>
+      </div>
     </div>
   );
 }

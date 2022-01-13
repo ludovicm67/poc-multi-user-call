@@ -103,6 +103,17 @@ a {
   width: 100%;
 }
 
+.multicall-panel-exchange {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.multicall-panel-chat-messages {
+  display: flex;
+  flex: 1;
+}
+
 .multicall-panel-chat-input {
   display: flex;
   flex-direction: row;
