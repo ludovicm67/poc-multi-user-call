@@ -45,6 +45,46 @@ export default function Panel() {
     [stream]
   );
 
+  const sendFile = (event, text) => {
+    const fileName = selectedFiles.file.name;
+    const fileId = selectedFiles.id;
+    let last = false;
+    let multipart = true;
+
+    if (event) {
+      text = event.target.result;
+    }
+
+    let message = "";
+    if (text.length > CHUNK_LENGTH) {
+      message = text.slice(0, CHUNK_LENGTH);
+    } else {
+      message = text;
+      last = true;
+      setSelectedFiles(undefined);
+      if (event) {
+        multipart = false;
+      }
+    }
+    sm.broadcastDataChannel({
+      type: "file",
+      data: {
+        id: fileId,
+        name: fileName,
+        message,
+        multipart,
+        last,
+      },
+    });
+
+    const remainingDataURL = text.slice(message.length);
+    if (remainingDataURL.length) {
+      setTimeout(function () {
+        sendFile(null, remainingDataURL);
+      }, 200);
+    }
+  };
+
   const uploadFiles = () => {
     if (!selectedFiles) {
       console.warn("no file was selected");
@@ -52,31 +92,10 @@ export default function Panel() {
     }
 
     const file = selectedFiles.file;
-    const fileId = selectedFiles.id;
-    let last = false;
 
     const reader: any = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = (event, text) => {
-      if (event) text = event.target.result;
-
-      let message = "";
-      if (text.length > CHUNK_LENGTH) {
-        message = text.slice(0, CHUNK_LENGTH);
-      } else {
-        message = text;
-        last = true;
-        setSelectedFiles(undefined);
-      }
-      sm.broadcastDataChannel({
-        type: "file",
-        data: {
-          id: fileId,
-          message,
-          last,
-        },
-      });
-    };
+    reader.onload = sendFile;
   };
 
   const selectFile = (e: any) => {
