@@ -6,16 +6,22 @@ export default function Messages() {
   return (
     <div className="chat-container">
       {messages.map((m) => {
-        if (m.sent) {
+        const chatClass = m.sent
+          ? "chat-message-sent"
+          : "chat-message-received";
+        if (m.type === "chat") {
           return (
-            <div key={m.id} className="chat-message-sent">
+            <div key={m.id} className={chatClass}>
               {m.data}
             </div>
           );
-        } else {
+        }
+        if (m.type === "file") {
           return (
-            <div key={m.id} className="chat-message-received">
-              {m.data}
+            <div key={m.id} className={chatClass}>
+              <a href={m.data.content} download={m.data.name}>
+                File: {m.data.name}
+              </a>
             </div>
           );
         }

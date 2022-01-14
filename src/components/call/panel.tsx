@@ -53,6 +53,19 @@ export default function Panel() {
 
     if (event) {
       text = event.target.result;
+
+      dispatch({
+        type: "MESSAGES_SENT",
+        payload: {
+          id: fileId,
+          type: "file",
+          data: {
+            content: text,
+            name: fileName,
+            complete: true,
+          },
+        },
+      });
     }
 
     let message = "";
