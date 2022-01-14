@@ -34,6 +34,29 @@ const messagesReducer = (state = initialState, action) => {
         data: action.payload.data,
       }];
 
+    case 'MESSAGES_RECEIVED_PART_FILE':
+      if (!action.payload.id) {
+        return state;
+      }
+
+      return state.map(m => {
+        if (m.id !== action.payload.id) {
+          return m;
+        }
+
+        const content = m.data.content.concat(action.payload.data);
+        const complete = action.payload.last;
+
+        return {
+          ...m,
+          data: {
+            ...m.data,
+            complete,
+            content,
+          }
+        };
+      });
+
     default:
       return state;
   }

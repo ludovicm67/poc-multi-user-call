@@ -48,10 +48,12 @@ export default function Panel() {
   const sendFile = (event, text) => {
     const fileName = selectedFiles.file.name;
     const fileId = selectedFiles.id;
+    let first = false;
     let last = false;
     let multipart = true;
 
     if (event) {
+      first = true;
       text = event.target.result;
 
       dispatch({
@@ -86,6 +88,7 @@ export default function Panel() {
         name: fileName,
         message,
         multipart,
+        first,
         last,
       },
     });

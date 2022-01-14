@@ -109,6 +109,41 @@ const SocketManager = class SocketManager {
         return;
       }
 
+      if (d.type === "file") {
+        const first = d?.data?.first;
+        const last = d?.data?.last;
+        const multipart = d?.data?.multipart;
+
+        if (first) {
+          const complete = first && last && !multipart;
+          this.store.dispatch({
+            type: 'MESSAGES_RECEIVED',
+            payload: {
+              id: d.data.id,
+              from: id,
+              type: d.type,
+              data: {
+                content: d?.data?.message,
+                name: d?.data?.name || 'untitled',
+                complete,
+              },
+            },
+          });
+          return;
+        }
+
+        this.store.dispatch({
+          type: 'MESSAGES_RECEIVED_PART_FILE',
+          payload: {
+            id: d.data.id,
+            last,
+            data: d?.data?.message,
+          },
+        });
+
+        return;
+      }
+
       console.log(`[data channel] got unhandled data from '${id}': ${JSON.stringify(d)}`);
     } catch (e) {
       console.error(e);
