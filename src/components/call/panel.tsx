@@ -172,10 +172,8 @@ export default function Panel() {
     <div className="multicall-panel">
       {stream && <video ref={myVideo}></video>}
       {!stream && <p>No local video stream</p>}
+      <Messages />
       <div className="multicall-panel-exchange">
-        <div className="multicall-panel-chat-messages">
-          <Messages />
-        </div>
         {/* <ul>
           {Object.entries(users).map((u) => {
             const user = u[1];

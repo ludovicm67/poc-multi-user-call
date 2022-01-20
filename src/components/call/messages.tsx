@@ -4,7 +4,7 @@ export default function Messages() {
   const messages = useSelector((state: any) => state.messages);
 
   return (
-    <div className="chat-container">
+    <div className="multicall-panel-chat-messages">
       {messages.map((m) => {
         const chatClass = m.sent
           ? "chat-message-sent"

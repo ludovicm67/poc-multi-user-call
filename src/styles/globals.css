@@ -103,17 +103,6 @@ a {
   width: 100%;
 }
 
-.multicall-panel-exchange {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-}
-
-.multicall-panel-chat-messages {
-  display: flex;
-  flex: 1;
-}
-
 .multicall-panel-chat-input {
   display: flex;
   flex-direction: row;
@@ -186,12 +175,9 @@ a {
 .multicall-panel-chat-messages {
   display: flex;
   flex: 1;
-}
-
-.chat-container {
-  display: flex;
-  flex: 1;
   flex-direction: column;
+  overflow: auto;
+  padding: 0.4em;
 }
 
 .chat-message-sent {
@@ -206,8 +192,10 @@ a {
 
 .chat-message-sent,
 .chat-message-received {
-  padding: 1em;
-  margin-bottom: 1em;
+  padding: 0.8em;
+  margin-bottom: 0.8em;
+  border-radius: 3px;
+  font-size: 0.8em;
 }
 
 @media screen and (max-width: 1200px) {
