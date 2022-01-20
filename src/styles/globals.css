@@ -196,6 +196,7 @@ a {
   margin-bottom: 0.8em;
   border-radius: 3px;
   font-size: 0.8em;
+  line-break: anywhere;
 }
 
 @media screen and (max-width: 1200px) {
