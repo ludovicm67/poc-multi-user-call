@@ -18,6 +18,7 @@ export default function Panel() {
 
   const [selectedFiles, setSelectedFiles] = useState<FileContainer>();
   const [message, setMessage] = useState<string>("");
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
   const sm = useContext(SocketContext);
   const stream = useSelector((state: any) => state.user.stream);
@@ -81,17 +82,21 @@ export default function Panel() {
         multipart = false;
       }
     }
-    sm.broadcastDataChannel({
-      type: "file",
-      data: {
-        id: fileId,
-        name: fileName,
-        message,
-        multipart,
-        first,
-        last,
+    sm.sendDataChannel(
+      {
+        type: "file",
+        data: {
+          id: fileId,
+          name: fileName,
+          message,
+          multipart,
+          first,
+          last,
+        },
       },
-    });
+      selectedUsers,
+      true
+    );
 
     const remainingDataURL = text.slice(message.length);
     if (remainingDataURL.length) {
@@ -140,14 +145,18 @@ export default function Panel() {
     if (message) {
       const last = true;
       const chatId = uuidv4();
-      sm.broadcastDataChannel({
-        type: "chat",
-        data: {
-          id: chatId,
-          message,
-          last,
+      sm.sendDataChannel(
+        {
+          type: "chat",
+          data: {
+            id: chatId,
+            message,
+            last,
+          },
         },
-      });
+        selectedUsers,
+        true
+      );
       dispatch({
         type: "MESSAGES_SENT",
         payload: {
@@ -168,22 +177,41 @@ export default function Panel() {
     setMessage(e.target.value);
   };
 
+  const changeDest = (e) => {
+    const userId = e.target.value;
+    const checked = e.target.checked;
+
+    if (checked) {
+      if (!selectedUsers.includes(userId)) {
+        setSelectedUsers([...selectedUsers, userId]);
+      }
+    } else {
+      setSelectedUsers(selectedUsers.filter((u) => u !== userId));
+    }
+  };
+
   return (
     <div className="multicall-panel">
       {stream && <video ref={myVideo}></video>}
       {!stream && <p>No local video stream</p>}
       <Messages />
       <div className="multicall-panel-exchange">
-        {/* <ul>
-          {Object.entries(users).map((u) => {
-            const user = u[1];
-            return (
-              <li key={user.id}>
+        {Object.entries(users).map((u) => {
+          const user = u[1];
+          return (
+            <p key={`select-user-dest-${user.id}`}>
+              <label>
+                <input
+                  type="checkbox"
+                  value={user.id}
+                  checked={selectedUsers.includes(user.id)}
+                  onChange={changeDest}
+                />{" "}
                 {user.displayName} <small>#{user.id}</small>
-              </li>
-            );
-          })}
-        </ul> */}
+              </label>
+            </p>
+          );
+        })}
         <form
           className="multicall-panel-chat-input"
           onSubmit={sendButtonAction}

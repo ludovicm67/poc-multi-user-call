@@ -168,6 +168,29 @@ const SocketManager = class SocketManager {
   }
 
   /**
+   * Send data to a list of users.
+   *
+   * @param data Data to sent.
+   * @param users Array of user ID to send to.
+   * @param broadcastIfEmpty Broadcast the message if the list of users is empty.
+   */
+  sendDataChannel(data: any, users: string[] = [], broadcastIfEmpty: boolean = true) {
+    if (broadcastIfEmpty && (!users || users.length === 0)) {
+      this.broadcastDataChannel(data);
+      return;
+    }
+
+    const state = this.store.getState();
+    const usersState: Record<string, OtherUser> = state.users;
+
+    Object.values(usersState).forEach((u) => {
+      if (users.includes(u?.id) && u?.dc?.readyState === 'open') {
+        u.dc.send(JSON.stringify(data));
+      }
+    });
+  }
+
+  /**
    * Listen on "user" events.
    *
    * @param data List of users.
