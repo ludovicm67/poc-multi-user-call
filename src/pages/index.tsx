@@ -43,21 +43,32 @@ export default function Index() {
       {inCall ? (
         <Home />
       ) : (
-        <div>
+        <div className="onboarding">
           <h1>Configuration</h1>
+          <p>
+            Create or join a full peer-to-peer video conference experience.
+            <br />
+            See your friends, send chat messages or send files in a secure way!
+          </p>
           <form onSubmit={enterCallAction}>
-            <input
-              type="text"
-              placeholder="Display Name"
-              value={displayName}
-              onChange={changeDisplayName}
-            />
-            <input
-              type="text"
-              placeholder="Room"
-              value={room}
-              onChange={changeRoom}
-            />
+            <label>
+              Display Name
+              <input
+                type="text"
+                placeholder="Display Name"
+                value={displayName}
+                onChange={changeDisplayName}
+              />
+            </label>
+            <label>
+              Room
+              <input
+                type="text"
+                placeholder="Room"
+                value={room}
+                onChange={changeRoom}
+              />
+            </label>
             <button type="submit" disabled={!displayName || !room}>
               Enter call
             </button>
