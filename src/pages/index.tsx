@@ -44,11 +44,11 @@ export default function Index() {
         <Home />
       ) : (
         <div className="onboarding">
-          <h1>Configuration</h1>
+          <h1>Multicall</h1>
           <p>
             Create or join a full peer-to-peer video conference experience.
             <br />
-            See your friends, send chat messages or send files in a secure way!
+            See your friends, send chat messages or send files securely!
           </p>
           <form onSubmit={enterCallAction}>
             <label>
