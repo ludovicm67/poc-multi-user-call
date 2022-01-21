@@ -41,6 +41,25 @@ const userReducer = (state = initialState, action) => {
         stream: action.payload,
       };
 
+    case 'USER_UPDATE_DISPLAY_NAME':
+      return {
+        ...state,
+        displayName: action.payload,
+      };
+
+    case 'USER_UPDATE_ROOM':
+      return {
+        ...state,
+        room: action.payload,
+      };
+
+    case 'USER_UPDATE_INF0S':
+      return {
+        ...state,
+        displayName: action.payload.displayName,
+        room: action.payload.room,
+      };
+
     default:
       return state;
   }

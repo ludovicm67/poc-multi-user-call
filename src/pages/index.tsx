@@ -1,22 +1,37 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useSelector } from "react-redux";
-import { Socket } from "socket.io-client";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Head from "next/head";
-import Call from "src/components/call";
-import SocketContext from "src/lib/SocketContext";
+import Home from "src/components/home";
 
-export default function Home() {
-  const sm = useContext(SocketContext);
-  const [socket, setSocket] = useState<Socket>();
-  const stream = useSelector((state: any) => state.user.stream);
+export default function Index() {
+  const dispatch = useDispatch();
+  const user = useSelector((state: any) => state.user);
+  const [inCall, setInCall] = useState<boolean>(false);
+  const [displayName, setDisplayName] = useState<string>(user.displayName);
+  const [room, setRoom] = useState<string>(user.room);
 
-  useEffect(() => {
-    const s = sm.getSocket();
-    sm.connect();
-    setSocket(s);
-  }, [sm]);
+  const enterCallAction = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
 
-  const isReady = socket && stream;
+    dispatch({
+      type: "USER_UPDATE_INF0S",
+      payload: {
+        displayName,
+        room,
+      },
+    });
+
+    setInCall(true);
+  };
+
+  const changeDisplayName = (e) => {
+    setDisplayName(e.target.value);
+  };
+
+  const changeRoom = (e) => {
+    setRoom(e.target.value);
+  };
 
   return (
     <div>
@@ -25,12 +40,30 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      {!isReady && (
-        <div className="init-msg">
-          <p>Starting the call…</p>
+      {inCall ? (
+        <Home />
+      ) : (
+        <div>
+          <h1>Configuration</h1>
+          <form onSubmit={enterCallAction}>
+            <input
+              type="text"
+              placeholder="Display Name"
+              value={displayName}
+              onChange={changeDisplayName}
+            />
+            <input
+              type="text"
+              placeholder="Room"
+              value={room}
+              onChange={changeRoom}
+            />
+            <button type="submit" disabled={!displayName || !room}>
+              Enter call
+            </button>
+          </form>
         </div>
       )}
-      {isReady && <Call />}
     </div>
   );
 }
