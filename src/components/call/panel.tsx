@@ -108,7 +108,7 @@ export default function Panel() {
     }
   };
 
-  const uploadFiles = () => {
+  const uploadFiles = async () => {
     if (!selectedFiles) {
       console.warn("no file was selected");
       return;
@@ -116,7 +116,15 @@ export default function Panel() {
 
     const file = selectedFiles.file;
 
-    filePool.addFile(file, file.name);
+    const fileMetadata = await filePool.addFile(file, file.name);
+    sm.sendDataChannel(
+      {
+        type: "file-metadata",
+        data: fileMetadata,
+      },
+      selectedUsers,
+      true
+    );
 
     const reader: any = new FileReader();
     reader.readAsDataURL(file);
@@ -142,7 +150,7 @@ export default function Panel() {
     setSelectedFiles(undefined);
   };
 
-  const sendButtonAction = (e) => {
+  const sendButtonAction = async (e) => {
     e.stopPropagation();
     e.preventDefault();
 
@@ -173,7 +181,7 @@ export default function Panel() {
     }
 
     if (selectedFiles) {
-      uploadFiles();
+      await uploadFiles();
     }
   };
 
