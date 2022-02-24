@@ -16,6 +16,8 @@ const CHUNK_LENGTH = 1_000;
 export default function Panel() {
   const dispatch = useDispatch();
 
+  const [notes, setNotes] = useState<string>("");
+
   const [selectedFiles, setSelectedFiles] = useState<FileContainer>();
   const [message, setMessage] = useState<string>("");
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
@@ -259,6 +261,21 @@ export default function Panel() {
             </div>
           )}
         </form>
+        <div>
+          <p>Notes</p>
+          <textarea onChange={(e) => setNotes(e.target.value)}>
+            {notes}
+          </textarea>
+          <button onClick={() => navigator.clipboard.writeText(notes)}>
+            Copy in clipboard
+          </button>
+          <a
+            href={`data:text/plain;charset=utf-8,${encodeURIComponent(notes)}`}
+            download={true}
+          >
+            Download as file
+          </a>
+        </div>
       </div>
     </div>
   );
