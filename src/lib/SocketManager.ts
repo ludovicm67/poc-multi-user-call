@@ -11,7 +11,22 @@ type MessageData = {
   data: any;
 };
 
-const SocketManager = class SocketManager {
+export type SocketManagerType = {
+  store: any;
+  socket: Socket;
+
+  constructor: Function;
+  connect(): Promise<void>;
+  getSocket(): Socket;
+  socketEmit(type: string, content: any): void;
+  getDataChannel(id: string, data: any): void;
+  broadcastDataChannel(data: any): void;
+  sendDataChannel(data: any, users: string[], broadcastIfEmpty: boolean): void;
+  listenUser(data: Record<string, User>): void;
+  listenMessage(data: MessageData): Promise<void>;
+};
+
+class SocketManager {
   store: any;
   socket: Socket;
 
