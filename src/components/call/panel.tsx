@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
 
 import SocketContext from "src/lib/SocketContext";
+import TransferFileContext from "src/lib/TransferFileContext";
 import { OtherUser } from "src/types/call";
 import Messages from "./messages";
 
@@ -21,6 +22,7 @@ export default function Panel() {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
   const sm = useContext(SocketContext);
+  const filePool = useContext(TransferFileContext);
   const stream = useSelector((state: any) => state.user.stream);
   const users: Record<string, OtherUser> = useSelector(
     (state: any) => state.users
@@ -113,6 +115,8 @@ export default function Panel() {
     }
 
     const file = selectedFiles.file;
+
+    filePool.addFile(file, file.name);
 
     const reader: any = new FileReader();
     reader.readAsDataURL(file);
