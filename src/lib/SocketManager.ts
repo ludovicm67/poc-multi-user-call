@@ -1,3 +1,4 @@
+import { TransferFileMetadata, TransferFilePool } from "@ludovicm67/lib-filetransfer";
 import SocketIOClient, { Socket } from "socket.io-client";
 
 import { constraints, offerOptions } from "src/call/default";
@@ -29,9 +30,11 @@ export type SocketManagerType = {
 class SocketManager {
   store: any;
   socket: Socket;
+  filePool: TransferFilePool;
 
-  constructor(store: any) {
+  constructor(store: any, filePool: TransferFilePool) {
     this.store = store;
+    this.filePool = filePool;
     this.socket = SocketIOClient(process.env.BASE_URL, {
       path: "/api/socketio",
     });
@@ -156,6 +159,26 @@ class SocketManager {
           },
         });
 
+        return;
+      }
+
+      if (d.type === "file-metadata") {
+        const fMetadata = d.data as TransferFileMetadata;
+        console.log(`User #${id} send metadata for file '${fMetadata.name}'#${fMetadata.id} (size=${fMetadata.size})`);
+        this.filePool.storeFileMetadata(fMetadata);
+
+        this.filePool.downloadFile(fMetadata.id, (fileId: string, offset: number, limit: number) => {
+          this.sendDataChannel({
+            type: "file-ask-part",
+            data: {
+              id: fileId,
+              offset,
+              limit,
+            },
+          }, [id], true);
+        }).then(() => {
+          console.log(this.filePool.getFile(fMetadata.id));
+        });
         return;
       }
 

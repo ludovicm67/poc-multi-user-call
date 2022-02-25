@@ -12,7 +12,7 @@ function MyApp({ Component, pageProps }) {
   const store = useStore();
 
   const filePool = new TransferFilePool({});
-  const sm = new SocketManager(store);
+  const sm = new SocketManager(store, filePool);
 
   return (
     <TransferFileContext.Provider value={filePool}>
