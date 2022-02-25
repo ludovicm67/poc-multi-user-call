@@ -1,9 +1,11 @@
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { useSelector } from "react-redux";
+import SocketContext from "src/lib/SocketContext";
 
 export default function Messages() {
   const messages = useSelector((state: any) => state.messages);
   const [isBottom, setIsBottom] = useState<boolean>(true);
+  const sm = useContext(SocketContext);
 
   // scroll to the bottom of the messages list on new messages
   const messagesList = useCallback(
@@ -37,6 +39,10 @@ export default function Messages() {
     }
   };
 
+  const downloadFile = (userId: string, fileId: string) => {
+    sm.downloadFile(userId, fileId);
+  };
+
   return (
     <div
       className="multicall-panel-chat-messages"
@@ -58,6 +64,7 @@ export default function Messages() {
           const fStatus = m.data.status || "unknown";
           const fName = m.data.name || "(untitled)";
           const fSize = m.data.size || 0;
+          const fId = m.data.id || "unknown-id";
 
           if (m.sent) {
             return (
@@ -65,21 +72,19 @@ export default function Messages() {
                 <p>
                   <small>Sent the following file:</small>
                 </p>
-                <p>
-                  <ul>
-                    <li>
-                      Name: <em>{fName}</em>
-                    </li>
-                    <li>
-                      Size: <em>{fSize}</em>
-                    </li>
-                  </ul>
-                </p>
+                <ul>
+                  <li>
+                    Name: <em>{fName}</em>
+                  </li>
+                  <li>
+                    Size: <em>{fSize}</em>
+                  </li>
+                </ul>
               </div>
             );
           }
 
-          if (fStatus === "metadata") {
+          if (fStatus === "metadata" || fStatus === "downloaded") {
             return (
               <div key={m.id} className={chatClass}>
                 <p>
@@ -94,7 +99,13 @@ export default function Messages() {
                   </li>
                 </ul>
                 <p>
-                  <button>Download?</button>
+                  <button
+                    onClick={() => {
+                      downloadFile(m.from, fId);
+                    }}
+                  >
+                    Download
+                  </button>
                 </p>
               </div>
             );
@@ -114,25 +125,6 @@ export default function Messages() {
                 </ul>
                 <p>
                   <em>Downloading…</em>
-                </p>
-              </div>
-            );
-          } else if (fStatus === "downloaded") {
-            return (
-              <div key={m.id} className={chatClass}>
-                <p>
-                  <small>Received the following file:</small>
-                </p>
-                <ul>
-                  <li>
-                    Name: <em>{fName}</em>
-                  </li>
-                  <li>
-                    Size: <em>{fSize}</em>
-                  </li>
-                </ul>
-                <p>
-                  <em>Downloaded!</em>
                 </p>
               </div>
             );

@@ -21,6 +21,7 @@ export type SocketManagerType = {
   getSocket(): Socket;
   socketEmit(type: string, content: any): void;
   getDataChannel(id: string, data: any): void;
+  downloadFile(userId: string, fileId: string): void;
   broadcastDataChannel(data: any): void;
   sendDataChannel(data: any, users: string[], broadcastIfEmpty: boolean): void;
   listenUser(data: Record<string, User>): void;
@@ -50,7 +51,7 @@ class SocketManager {
   /**
    * Start connection.
    */
-  async connect() {
+  async connect(): Promise<void> {
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
     this.store.dispatch({
       type: 'USER_UPDATE_STREAM',
@@ -83,7 +84,7 @@ class SocketManager {
    *
    * @returns nothing.
    */
-  socketEmit(type: string, content: any) {
+  socketEmit(type: string, content: any): void {
     if (!this.socket) {
       console.error("no socket available");
       return;
@@ -98,7 +99,7 @@ class SocketManager {
    * @param id The id of the user that sent the data.
    * @param data Data received.
    */
-  getDataChannel(id: string, data: any) {
+  getDataChannel(id: string, data: any): void {
     try {
       const d = JSON.parse(data);
       if (!d.type || !d.data || !d.data.id) {
@@ -145,19 +146,6 @@ class SocketManager {
           },
         });
 
-        this.filePool.downloadFile(fMetadata.id, (fileId: string, offset: number, limit: number) => {
-          this.sendDataChannel({
-            type: "file-ask-part",
-            data: {
-              id: fileId,
-              offset,
-              limit,
-            },
-          }, [id], true);
-        }).then(() => {
-          console.log(this.filePool.getFile(fMetadata.id));
-        });
-
         return;
       }
 
@@ -193,11 +181,32 @@ class SocketManager {
   }
 
   /**
+   * Download a specific file.
+   *
+   * @param userId Id of the user to ask the file.
+   * @param fileId Id of the file.
+   */
+  downloadFile(userId: string, fileId: string): void {
+    this.filePool.downloadFile(fileId, (fileId: string, offset: number, limit: number) => {
+      this.sendDataChannel({
+        type: "file-ask-part",
+        data: {
+          id: fileId,
+          offset,
+          limit,
+        },
+      }, [userId], true);
+    }).then(() => {
+      console.log(this.filePool.getFile(fileId));
+    });
+  }
+
+  /**
    * Broadcast on all data channels.
    *
    * @param data Data to broadcast.
    */
-  broadcastDataChannel(data: any) {
+  broadcastDataChannel(data: any): void {
     const state = this.store.getState();
     const users: Record<string, OtherUser> = state.users;
 
@@ -215,7 +224,7 @@ class SocketManager {
    * @param users Array of user ID to send to.
    * @param broadcastIfEmpty Broadcast the message if the list of users is empty.
    */
-  sendDataChannel(data: any, users: string[] = [], broadcastIfEmpty: boolean = true) {
+  sendDataChannel(data: any, users: string[] = [], broadcastIfEmpty: boolean = true): void {
     if (broadcastIfEmpty && (!users || users.length === 0)) {
       this.broadcastDataChannel(data);
       return;
@@ -236,7 +245,7 @@ class SocketManager {
    *
    * @param data List of users.
    */
-  listenUser(data: Record<string, User>) {
+  listenUser(data: Record<string, User>): void {
     if (!this.socket || !this.socket.id) {
       return;
     }
@@ -343,7 +352,7 @@ class SocketManager {
    *
    * @param data Message.
    */
-  async listenMessage(data: MessageData) {
+  async listenMessage(data: MessageData): Promise<void> {
     if (!this.socket || !this.socket.id) {
       return;
     }
