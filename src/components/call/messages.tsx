@@ -54,6 +54,109 @@ export default function Messages() {
             </div>
           );
         }
+        if (m.type === "file" && m.data) {
+          const fStatus = m.data.status || "unknown";
+          const fName = m.data.name || "(untitled)";
+          const fSize = m.data.size || 0;
+
+          if (m.sent) {
+            return (
+              <div key={m.id} className={chatClass}>
+                <p>
+                  <small>Sent the following file:</small>
+                </p>
+                <p>
+                  <ul>
+                    <li>
+                      Name: <em>{fName}</em>
+                    </li>
+                    <li>
+                      Size: <em>{fSize}</em>
+                    </li>
+                  </ul>
+                </p>
+              </div>
+            );
+          }
+
+          if (fStatus === "metadata") {
+            return (
+              <div key={m.id} className={chatClass}>
+                <p>
+                  <small>Received the following file:</small>
+                </p>
+                <ul>
+                  <li>
+                    Name: <em>{fName}</em>
+                  </li>
+                  <li>
+                    Size: <em>{fSize}</em>
+                  </li>
+                </ul>
+                <p>
+                  <button>Download?</button>
+                </p>
+              </div>
+            );
+          } else if (fStatus === "downloading") {
+            return (
+              <div key={m.id} className={chatClass}>
+                <p>
+                  <small>Received the following file:</small>
+                </p>
+                <ul>
+                  <li>
+                    Name: <em>{fName}</em>
+                  </li>
+                  <li>
+                    Size: <em>{fSize}</em>
+                  </li>
+                </ul>
+                <p>
+                  <em>Downloading…</em>
+                </p>
+              </div>
+            );
+          } else if (fStatus === "downloaded") {
+            return (
+              <div key={m.id} className={chatClass}>
+                <p>
+                  <small>Received the following file:</small>
+                </p>
+                <ul>
+                  <li>
+                    Name: <em>{fName}</em>
+                  </li>
+                  <li>
+                    Size: <em>{fSize}</em>
+                  </li>
+                </ul>
+                <p>
+                  <em>Downloaded!</em>
+                </p>
+              </div>
+            );
+          } else {
+            return (
+              <div key={m.id} className={chatClass}>
+                <p>
+                  <small>Received the following file:</small>
+                </p>
+                <ul>
+                  <li>
+                    Name: <em>{fName}</em>
+                  </li>
+                  <li>
+                    Size: <em>{fSize}</em>
+                  </li>
+                </ul>
+                <p>
+                  <em>Unknown status</em>
+                </p>
+              </div>
+            );
+          }
+        }
       })}
     </div>
   );

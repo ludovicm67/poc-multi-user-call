@@ -67,6 +67,16 @@ export default function Panel() {
     );
 
     clearSelectedFiles();
+    dispatch({
+      type: "MESSAGES_SENT",
+      payload: {
+        id: `file-${fileMetadata.id}`,
+        type: "file",
+        data: {
+          ...fileMetadata,
+        },
+      },
+    });
   };
 
   const selectFile = (e: any) => {

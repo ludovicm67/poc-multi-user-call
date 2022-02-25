@@ -132,6 +132,19 @@ class SocketManager {
         console.log(`User #${id} send metadata for file '${fMetadata.name}'#${fMetadata.id} (size=${fMetadata.size})`);
         this.filePool.storeFileMetadata(fMetadata);
 
+        this.store.dispatch({
+          type: 'MESSAGES_RECEIVED',
+          payload: {
+            id: `file-${fMetadata.id}`,
+            from: id,
+            type: "file",
+            data: {
+              ...fMetadata,
+              status: "metadata",
+            },
+          },
+        });
+
         this.filePool.downloadFile(fMetadata.id, (fileId: string, offset: number, limit: number) => {
           this.sendDataChannel({
             type: "file-ask-part",
@@ -144,6 +157,7 @@ class SocketManager {
         }).then(() => {
           console.log(this.filePool.getFile(fMetadata.id));
         });
+
         return;
       }
 
