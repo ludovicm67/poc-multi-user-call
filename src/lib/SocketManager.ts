@@ -1,4 +1,4 @@
-import { TransferFileMetadata, TransferFilePool } from "@ludovicm67/lib-filetransfer";
+import { arrayBufferToString, TransferFileMetadata, TransferFilePool } from "@ludovicm67/lib-filetransfer";
 import SocketIOClient, { Socket } from "socket.io-client";
 
 import { constraints, offerOptions } from "src/call/default";
@@ -179,6 +179,25 @@ class SocketManager {
         }).then(() => {
           console.log(this.filePool.getFile(fMetadata.id));
         });
+        return;
+      }
+
+      if (d.type === "file-ask-part") {
+        const fAskPart: {id: string, offset: number, limit: number} = d.data;
+        console.log(`User #${id} asked for part of file #${fAskPart.id} (offset=${fAskPart.offset}, limit=${fAskPart.limit})`);
+        const data = this.filePool.readFilePart(fAskPart.id, fAskPart.offset, fAskPart.limit);
+        const dataString = arrayBufferToString(data);
+
+        console.log(data, dataString);
+
+        this.sendDataChannel({
+          type: "file-part",
+          data: {
+            ...fAskPart,
+            data: dataString,
+          },
+        });
+
         return;
       }
 
