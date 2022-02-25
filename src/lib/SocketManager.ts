@@ -187,6 +187,13 @@ class SocketManager {
    * @param fileId Id of the file.
    */
   downloadFile(userId: string, fileId: string): void {
+    this.store.dispatch({
+      type: 'MESSAGES_SET_DOWNLOADING',
+      payload: {
+        id: `file-${fileId}`,
+      },
+    });
+
     this.filePool.downloadFile(fileId, (fileId: string, offset: number, limit: number) => {
       this.sendDataChannel({
         type: "file-ask-part",
@@ -197,7 +204,15 @@ class SocketManager {
         },
       }, [userId], true);
     }).then(() => {
-      console.log(this.filePool.getFile(fileId));
+      const file = this.filePool.getFile(fileId);
+      console.log(file);
+
+      this.store.dispatch({
+        type: 'MESSAGES_SET_DOWNLOADED',
+        payload: {
+          id: `file-${fileId}`,
+        },
+      });
     });
   }
 

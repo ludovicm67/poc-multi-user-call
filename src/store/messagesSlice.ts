@@ -34,6 +34,44 @@ const messagesReducer = (state = initialState, action) => {
         data: action.payload.data,
       }];
 
+    case 'MESSAGES_SET_DOWNLOADING':
+      if (!action.payload.id) {
+        return state;
+      }
+
+      return state.map(m => {
+        if (m.type !== "file" || m.id !== action.payload.id) {
+          return m;
+        }
+
+        return {
+          ...m,
+          data: {
+            ...m.data,
+            status: "downloading",
+          },
+        };
+      });
+
+    case 'MESSAGES_SET_DOWNLOADED':
+      if (!action.payload.id) {
+        return state;
+      }
+
+      return state.map(m => {
+        if (m.type !== "file" || m.id !== action.payload.id) {
+          return m;
+        }
+
+        return {
+          ...m,
+          data: {
+            ...m.data,
+            status: "downloaded",
+          },
+        };
+      });
+
     default:
       return state;
   }
