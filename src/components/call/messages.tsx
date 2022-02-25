@@ -54,23 +54,6 @@ export default function Messages() {
             </div>
           );
         }
-        if (m.type === "file") {
-          if (!m?.data?.complete) {
-            return (
-              <div key={m.id} className={chatClass}>
-                File: {m.data.name} (downloading…)
-              </div>
-            );
-          }
-
-          return (
-            <div key={m.id} className={chatClass}>
-              <a href={m.data.content} download={m.data.name}>
-                File: {m.data.name}
-              </a>
-            </div>
-          );
-        }
       })}
     </div>
   );

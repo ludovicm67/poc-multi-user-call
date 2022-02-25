@@ -48,66 +48,6 @@ export default function Panel() {
     [stream]
   );
 
-  const sendFile = (event, text) => {
-    const fileName = selectedFiles.file.name;
-    const fileId = selectedFiles.id;
-    let first = false;
-    let last = false;
-    let multipart = true;
-
-    if (event) {
-      first = true;
-      text = event.target.result;
-
-      dispatch({
-        type: "MESSAGES_SENT",
-        payload: {
-          id: fileId,
-          type: "file",
-          data: {
-            content: text,
-            name: fileName,
-            complete: true,
-          },
-        },
-      });
-    }
-
-    let message = "";
-    if (text.length > CHUNK_LENGTH) {
-      message = text.slice(0, CHUNK_LENGTH);
-    } else {
-      message = text;
-      last = true;
-      setSelectedFiles(undefined);
-      if (event) {
-        multipart = false;
-      }
-    }
-    sm.sendDataChannel(
-      {
-        type: "file",
-        data: {
-          id: fileId,
-          name: fileName,
-          message,
-          multipart,
-          first,
-          last,
-        },
-      },
-      selectedUsers,
-      true
-    );
-
-    const remainingDataURL = text.slice(message.length);
-    if (remainingDataURL.length) {
-      setTimeout(function () {
-        sendFile(null, remainingDataURL);
-      }, 200);
-    }
-  };
-
   const uploadFiles = async () => {
     if (!selectedFiles) {
       console.warn("no file was selected");
@@ -126,9 +66,7 @@ export default function Panel() {
       true
     );
 
-    const reader: any = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = sendFile;
+    clearSelectedFiles();
   };
 
   const selectFile = (e: any) => {

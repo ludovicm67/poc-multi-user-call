@@ -127,41 +127,6 @@ class SocketManager {
         return;
       }
 
-      if (d.type === "file") {
-        const first = d?.data?.first;
-        const last = d?.data?.last;
-        const multipart = d?.data?.multipart;
-
-        if (first) {
-          const complete = first && last && !multipart;
-          this.store.dispatch({
-            type: 'MESSAGES_RECEIVED',
-            payload: {
-              id: d.data.id,
-              from: id,
-              type: d.type,
-              data: {
-                content: d?.data?.message,
-                name: d?.data?.name || 'untitled',
-                complete,
-              },
-            },
-          });
-          return;
-        }
-
-        this.store.dispatch({
-          type: 'MESSAGES_RECEIVED_PART_FILE',
-          payload: {
-            id: d.data.id,
-            last,
-            data: d?.data?.message,
-          },
-        });
-
-        return;
-      }
-
       if (d.type === "file-metadata") {
         const fMetadata = d.data as TransferFileMetadata;
         console.log(`User #${id} send metadata for file '${fMetadata.name}'#${fMetadata.id} (size=${fMetadata.size})`);
@@ -187,8 +152,6 @@ class SocketManager {
         console.log(`User #${id} asked for part of file #${fAskPart.id} (offset=${fAskPart.offset}, limit=${fAskPart.limit})`);
         const data = this.filePool.readFilePart(fAskPart.id, fAskPart.offset, fAskPart.limit);
         const dataString = arrayBufferToString(data);
-
-        console.log(data, dataString);
 
         this.sendDataChannel({
           type: "file-part",
