@@ -1,4 +1,4 @@
-import { arrayBufferToString, TransferFileMetadata, TransferFilePool } from "@ludovicm67/lib-filetransfer";
+import { arrayBufferToString, stringToArrayBuffer, TransferFileMetadata, TransferFilePool } from "@ludovicm67/lib-filetransfer";
 import SocketIOClient, { Socket } from "socket.io-client";
 
 import { constraints, offerOptions } from "src/call/default";
@@ -198,6 +198,13 @@ class SocketManager {
           },
         });
 
+        return;
+      }
+
+      if (d.type === "file-part") {
+        const fPart: {id: string, offset: number, limit: number, data: string} = d.data;
+        console.log(`User #${id} sent part of file #${fPart.id} (offset=${fPart.offset}, limit=${fPart.limit})`);
+        this.filePool.receiveFilePart(fPart.id, fPart.offset, fPart.limit, stringToArrayBuffer(fPart.data));
         return;
       }
 
