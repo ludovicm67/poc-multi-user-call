@@ -1,6 +1,5 @@
-import { TransferFileMetadata, TransferFilePool } from "@ludovicm67/lib-filetransfer";
+import { arrayBufferToString, stringToArrayBuffer, TransferFileMetadata, TransferFilePool } from "@ludovicm67/lib-filetransfer";
 import SocketIOClient, { Socket } from "socket.io-client";
-import { encode, decode } from "base64-arraybuffer";
 
 import { constraints, offerOptions } from "src/call/default";
 import rtcConfiguration from "src/call/rtcConfiguration";
@@ -154,7 +153,7 @@ class SocketManager {
         const fAskPart: {id: string, offset: number, limit: number} = d.data;
         console.log(`User #${id} asked for part of file #${fAskPart.id} (offset=${fAskPart.offset}, limit=${fAskPart.limit})`);
         const data = this.filePool.readFilePart(fAskPart.id, fAskPart.offset, fAskPart.limit);
-        const dataString = encode(data);
+        const dataString = arrayBufferToString(data);
 
         this.sendDataChannel({
           type: "file-part",
@@ -170,7 +169,7 @@ class SocketManager {
       if (d.type === "file-part") {
         const fPart: {id: string, offset: number, limit: number, data: string} = d.data;
         console.log(`User #${id} sent part of file #${fPart.id} (offset=${fPart.offset}, limit=${fPart.limit})`);
-        this.filePool.receiveFilePart(fPart.id, fPart.offset, fPart.limit, decode(fPart.data));
+        this.filePool.receiveFilePart(fPart.id, fPart.offset, fPart.limit, stringToArrayBuffer(fPart.data));
         return;
       }
 
@@ -207,7 +206,7 @@ class SocketManager {
     }).then(() => {
       const file = this.filePool.getFile(fileId);
       const url = URL.createObjectURL(file.data);
-      window.open(url, '_blank').focus();
+      window.open(url, '_blank');
 
       this.store.dispatch({
         type: 'MESSAGES_SET_DOWNLOADED',
