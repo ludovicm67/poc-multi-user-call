@@ -11,7 +11,10 @@ import { TransferFilePool } from "@ludovicm67/lib-filetransfer";
 function MyApp({ Component, pageProps }) {
   const store = useStore();
 
-  const filePool = new TransferFilePool({ maxBufferSize: 5000 });
+  const filePool = new TransferFilePool({
+    maxBufferSize: 5000,
+    parallelCalls: 50,
+  });
   const sm = new SocketManager(store, filePool);
 
   return (
